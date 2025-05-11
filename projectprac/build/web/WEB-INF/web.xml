@@ -1,5 +1,0 @@
-<web-app>
-	<listener>
-		<listener-class>ConnectionDao</listener-class>
-	</listener>
-</web-app>
