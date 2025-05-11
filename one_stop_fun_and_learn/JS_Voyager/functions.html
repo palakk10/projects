@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Function</title>
+   <link rel="stylesheet" href="All_pages-css.css">
+   
+</head>
+<body>
+   <script src="All_pages-script.js"></script>
+   <!-- for text -->
+   <div class="Container">
+       <h1 id="t_h1">Function</h1>
+       <pre id="text">
+        <strong>FUNCTIONS:</strong><ul>
+<li>Functions are the bread and butter of JavaScript programming. The concept of wrapping a piece
+of program in a value has many uses. It gives us a way to structure larger programs, to reduce repetition,
+to associate names with subprograms, and to isolate these subprograms from each other.</li>     
+<li>A function definition is a regular binding where the value of the binding is a function. </li>       
+<li>A function is created with an expression that starts with the keyword function. Functions have 
+a set of parameters (in this case, only x) and a body, which contains the statements that are to be executed
+when the function is called. The function body of a function created this way must always be wrapped in braces,
+even when it consists of only a single statement.</li>
+<li>Some functions produce a value, such as power and square, and some don’t, such as makeNoise, whose only 
+result is a side effect. A return statement determines the value the function returns. When control
+comes across such a statement, it immediately jumps out of the current function and gives the returned value
+to the code that called the function. A return keyword without an expression after it will cause the function to 
+return undefined. Functions that don’t have a return statement at all, such as makeNoise, similarly return undefined.</li>
+<li>Parameters to a function behave like regular bindings, but their initial values are given by 
+the caller of the function, not the code in the function itself.</li>
+<li>A JavaScript function is defined with the function keyword, followed by a name, followed by parentheses ().
+Function names can contain letters, digits, underscores, and dollar signs (same rules as variables).
+The parentheses may include parameter names separated by commas:
+    (parameter1, parameter2, ...)
+The code to be executed, by the function, is placed inside curly brackets: {}
+    function name(parameter1, parameter2, parameter3) {
+      // code to be executed
+    }
+Function parameters are listed inside the parentheses () in the function definition.
+Function arguments are the values received by the function when it is invoked.
+Inside the function, the arguments (the parameters) behave as local variables.</li>
+<li>Function Return:
+When JavaScript reaches a return statement, the function will stop executing.
+If the function was invoked from a statement, JavaScript will "return" to execute the code after the invoking statement.
+Functions often compute a return value. The return value is "returned" back to the "caller":
+    Refer Example-1;
+    The code to be executed, by the function, is placed inside curly brackets: {}
+    function name(parameter1, parameter2, parameter3) {
+      // code to be executed
+      return parameters;
+    }</li>
+<li>The () Operator:
+    Refer Example-2;
+    function functionname(parameter) {
+        return () parameter;
+      }
+      
+      let value = functionname();</li>  
+<li>Functions Used as Variable Values:
+Functions can be used the same way as you use variables, in all types of formulas, assignments, and calculations.
+    Refer Example-3</li>  
+<li>Local Variables:
+Variables declared within a JavaScript function, become LOCAL to the function.
+Local variables can only be accessed from within the function.
+    Refer Example-4</li>   
+</ul></pre>
+      
+   </div>
+   <!-- for example -->
+   <div id="ex">
+    <h1>Examples</h1>
+       <pre id="text">
+ <p>       <ul>Example-1</ul>
+        Calculate the product of two numbers, and return the result:
+        // Function is called, the return value will end up in x
+        let x = myFunction(4, 3);
+        function myFunction(a, b) {
+        // Function returns the product of a and b
+          return a * b;
+        }</p>
+<p>        <ul>Example-2</ul>
+            The () operator invokes (calls) the function:
+    Convert Fahrenheit to Celsius:
+    function toCelsius(fahrenheit) {
+      return (5/9) * (fahrenheit-32);
+    }
+    let value = toCelsius(77);
+</p>
+<p>     <ul>Example-3</ul>
+Instead of using a variable to store the return value of a function:
+    let x = toCelsius(77);
+    let text = "The temperature is " + x + " Celsius";</p>    
+<p>    <ul>Example-4</ul>
+    // code here can NOT use carName
+    function myFunction() {
+       let carName = "Volvo";
+       // code here CAN use carName
+     }
+
+</p>
+
+       </pre>
+      
+
+   </div>
+   <div id="backbutton">
+       <a href="2nd_Page.html"><button id="back"><img src="Images/back.png" height="55px" width="55px"></button></a>
+
+  </div>
+  <div id="print">
+       <button id="p" onclick="print()"><img src="Images/Print.png" height="30px" width="30px"> Print page</button>
+  </div>
+</body>
+</html>
