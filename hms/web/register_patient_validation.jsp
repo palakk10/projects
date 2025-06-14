@@ -1,78 +1,127 @@
-<%@page import="java.sql.*" %>
-
-
+<%@ page import="java.sql.*, java.text.SimpleDateFormat" %>
 <%
+    String pname = request.getParameter("patientname");
+    String email = request.getParameter("email");
+    String pwd = request.getParameter("pwd");
+    String phone = request.getParameter("phone");
+    String rov = request.getParameter("rov");
+    String gender = request.getParameter("gender");
+    String age = request.getParameter("age");
+    String bgroup = request.getParameter("bgroup");
+    String street = request.getParameter("street");
+    String area = request.getParameter("area");
+    String city = request.getParameter("city");
+    String state = request.getParameter("state");
+    String country = request.getParameter("country");
+    String pincode = request.getParameter("pincode");
 
+    // Room, Bed, and Doctor will be assigned by admin later, so set as NULL
+    Integer roomNo = null;
+    Integer bedNo = null;
+    Integer doctorId = null;
 
+    // Current date for DATE_AD
+    java.util.Date currentDate = new java.util.Date();
+    java.sql.Date sqlDate = new java.sql.Date(currentDate.getTime());
 
-        String pid=request.getParameter("patientid");
+    Connection con = null;
+    PreparedStatement ps = null;
+    PreparedStatement deptStmt = null;
+    PreparedStatement doctorStmt = null;
+    ResultSet deptRs = null;
+    ResultSet doctorRs = null;
 
-	String pname=request.getParameter("patientname");
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/hms", "root", "Naman@123");
 
-	String email=request.getParameter("email");
+        // Step 1: Get department ID from reasonOfVisit
+        String getDeptIdQuery = "SELECT DEPT_ID FROM REASON_DEPARTMENT_MAPPING WHERE LOWER(REASON) = ?";
+        deptStmt = con.prepareStatement(getDeptIdQuery);
+        deptStmt.setString(1, rov.toLowerCase());
+        deptRs = deptStmt.executeQuery();
 
-	String pwd=request.getParameter("pwd");
+        int deptId = -1;
+        if (deptRs.next()) {
+            deptId = deptRs.getInt("DEPT_ID");
+        } else {
+            // Fallback: Assign to General Physician (DEPT_ID = 1)
+            deptId = 1;
+        }
 
-	String add=request.getParameter("add");
+        // Step 2: Get a random doctor ID from that department
+        if (deptId != -1) {
+            String doctorQuery = "SELECT ID FROM DOCTOR_INFO WHERE DEPT_ID = ? ORDER BY RAND() LIMIT 1";
+            doctorStmt = con.prepareStatement(doctorQuery);
+            doctorStmt.setInt(1, deptId);
+            doctorRs = doctorStmt.executeQuery();
 
-	String phone=request.getParameter("phone");
+            if (doctorRs.next()) {
+                doctorId = doctorRs.getInt("ID");
+            } else {
+                // Fallback: Pick any doctor
+                doctorStmt = con.prepareStatement("SELECT ID FROM DOCTOR_INFO LIMIT 1");
+                doctorRs = doctorStmt.executeQuery();
+                if (doctorRs.next()) {
+                    doctorId = doctorRs.getInt("ID");
+                }
+            }
+        }
 
-	String rov=request.getParameter("rov");
+        // Step 3: Insert into PATIENT_INFO
+        String sql = "INSERT INTO PATIENT_INFO (PNAME, GENDER, AGE, BGROUP, PHONE, REA_OF_VISIT, ROOM_NO, BED_NO, DOCTOR_ID, DATE_AD, EMAIL, PASSWORD, STREET, AREA, CITY, STATE, COUNTRY, PINCODE) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ps = con.prepareStatement(sql);
 
-	String roomNo="0";//request.getParameter("roomNo");
+        ps.setString(1, pname);
+        ps.setString(2, gender);
+        ps.setInt(3, Integer.parseInt(age));
+        ps.setString(4, bgroup);
+        ps.setString(5, phone);
+        ps.setString(6, rov);
+        ps.setNull(7, java.sql.Types.INTEGER); // ROOM_NO
+        ps.setNull(8, java.sql.Types.INTEGER); // BED_NO
+        if (doctorId != null) {
+            ps.setInt(9, doctorId); // DOCTOR_ID
+        } else {
+            ps.setNull(9, java.sql.Types.INTEGER);
+        }
+        ps.setDate(10, sqlDate);
+        ps.setString(11, email);
+        ps.setString(12, pwd);
+        ps.setString(13, street);
+        ps.setString(14, area);
+        ps.setString(15, city);
+        ps.setString(16, state);
+        ps.setString(17, country);
+        ps.setString(18, pincode);
 
-	String bedNo="0";//request.getParameter("bed_no");
+        int i = ps.executeUpdate();
 
-	String doct="Not Reffered";//request.getParameter("doct");
-
-	String gender=request.getParameter("gender");
-
-	String joindate="Not Provided";//request.getParameter("joindate");
-
-	String age=request.getParameter("age");
-
-	String bgroup=request.getParameter("bgroup");
-
-
-        Connection con=(Connection)application.getAttribute("connection");
-        PreparedStatement ps=con.prepareStatement("insert into patient_info(pname,gender,age,bgroup,phone,rea_of_visit,room_no,bed_no,doc_name,date_ad,email,password,address) values(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-  
-      	ps.setString(1,pname);
-      	ps.setString(2,gender);
-     	ps.setInt(3,Integer.parseInt(age));
-     	ps.setString(4,bgroup);
-     	ps.setString(5,phone);
-     	ps.setString(6,rov);
-      	ps.setInt(7,Integer.parseInt(roomNo));
-      	ps.setInt(8,Integer.parseInt(bedNo));
-      	ps.setString(9,doct);
-      	ps.setString(10,joindate);
-      	ps.setString(11,email);
-      	ps.setString(12,pwd);
-      	ps.setString(13,add);
-
-	int i =ps.executeUpdate();
-  
-	if(i>0)
-
-	{
+        if (i > 0) {
 %>
-<div style="text-align:center;margin-top:25%">
-<font color="magenta">
-<script type="text/javascript">
-function Redirect()
-{
-    window.location="index.jsp";
-}
-document.write("<h2>Patient Registration Successfull.Login to See More Details.</h2><br><Br>");
-document.write("<h3>Redirecting you to home page....</h3>");
-setTimeout('Redirect()', 3000);
-</script>
-</font>
-</div>
+            <script>
+                alert("Patient Registered Successfully! Admin will assign room and bed details.");
+                window.location.href = "index.jsp";
+            </script>
 <%
-	}
-
-	ps.close();
-	con.commit();	
+        } else {
+%>
+            <script>
+                alert("Registration Failed!");
+                window.history.back();
+            </script>
+<%
+        }
+    } catch (Exception e) {
+        out.println("Error: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        if (doctorRs != null) try { doctorRs.close(); } catch(Exception e) {}
+        if (deptRs != null) try { deptRs.close(); } catch(Exception e) {}
+        if (doctorStmt != null) try { doctorStmt.close(); } catch(Exception e) {}
+        if (deptStmt != null) try { deptStmt.close(); } catch(Exception e) {}
+        if (ps != null) try { ps.close(); } catch(Exception e) {}
+        if (con != null) try { con.close(); } catch(Exception e) {}
+    }
 %>
